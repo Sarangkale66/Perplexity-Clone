@@ -2,7 +2,6 @@ const cookie = require("cookie");
 const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
 const aiService = require("../services/ai.service");
-const chatModel = require("../model/chat.model");
 const messageModel = require('../model/message.model')
 
 function initSocket(httpServer) {
@@ -32,17 +31,38 @@ function initSocket(httpServer) {
   });
 
   io.on("connection", (socket) => {
+    console.log("A user connected");
+
+    socket.on("joinRoom", (room) => {
+      if (socket.currentRoom) {
+        socket.leave(socket.currentRoom);
+      }
+      socket.join(room);
+      socket.currentRoom = room;
+      console.log(`User ${socket.user.id} joined room ${room}`);
+    })
+
+    socket.on("leaveRoom", (room) => {
+      const targetRoom = room || socket.currentRoom;
+      if (targetRoom) {
+        socket.leave(targetRoom);
+        console.log(`User ${socket.user.id} left room ${targetRoom}`);
+        if (socket.currentRoom === targetRoom) {
+          socket.currentRoom = null;
+        }
+      }
+    })
 
     socket.on("ai-message", async (data) => {
       await messageModel.create({
-        chat: data.chatId,
+        chat: data.chatId || socket.currentRoom,
         user: socket.user.id,
         role: "user",
         text: data.message
       })
 
       const history = (await messageModel.find({
-        chat: data.chatId,
+        chat: data.chatId || socket.currentRoom,
         user: socket.user.id
       })).map(message => {
         return {
@@ -56,16 +76,17 @@ function initSocket(httpServer) {
       })
 
       const responseTxt = await aiService.generateContentStream(history, (chunk) => {
-        socket.emit("ai-response", chunk);
+        if (socket.currentRoom) {
+          io.to(socket.currentRoom).emit("ai-response", chunk);
+        }
       });
 
       await messageModel.create({
-        chat: data.chatId,
+        chat: data.chatId || socket.currentRoom,
         user: socket.user.id,
         role: "model",
         text: responseTxt
       })
-
 
     })
 

@@ -1,15 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AuthState } from "./AuthSlice";
 
 export interface Message {
-  role: "user" | "model";
+  role: string;
   message: string;
   timestamp: number;
 }
 
 export interface ChatState {
   _id: string;
-  user: AuthState;
   title: string;
 }
 
@@ -33,22 +31,24 @@ const chatSlice = createSlice({
   reducers: {
     addChat: (state, action: PayloadAction<ChatState>) => {
       const chat = action.payload;
-
-      state.chats = state.chats.filter((c) => c._id !== chat._id);
-      state.chats.push(chat);
-
-      state.roomOrder = state.roomOrder.filter((id) => id !== chat._id);
-      state.roomOrder.push(chat._id);
+      const existingIndex = state.chats.findIndex((c) => c._id === chat._id);
+      if (existingIndex >= 0) {
+        state.chats[existingIndex] = chat;
+      } else {
+        state.chats.unshift(chat);
+      }
 
       if (!state.messages[chat._id]) {
         state.messages[chat._id] = [];
       }
 
+      state.roomOrder = state.roomOrder.filter((id) => id !== chat._id);
+      state.roomOrder.push(chat._id);
+
       while (state.roomOrder.length > MAX_CHATS) {
         const oldest = state.roomOrder.shift();
         if (oldest) {
           delete state.messages[oldest];
-          state.chats = state.chats.filter((c) => c._id !== oldest);
         }
       }
     },
@@ -62,7 +62,7 @@ const chatSlice = createSlice({
 
     addMessage: (
       state,
-      action: PayloadAction<{ roomId: string; role: "user" | "model"; message: string }>
+      action: PayloadAction<{ roomId: string; role: string; message: string }>
     ) => {
       const { roomId, role, message } = action.payload;
       if (!state.messages[roomId]) {
@@ -73,6 +73,26 @@ const chatSlice = createSlice({
         message,
         timestamp: Date.now(),
       });
+    },
+
+    appendToLastAssistantMessage: (
+      state,
+      action: PayloadAction<{ roomId: string; chunk: string }>
+    ) => {
+      const { roomId, chunk } = action.payload;
+      const msgs = state.messages[roomId] || [];
+
+      if (msgs.length > 0 && msgs[msgs.length - 1].role === "assistant") {
+        msgs[msgs.length - 1].message += chunk;
+      } else {
+        msgs.push({
+          role: "assistant",
+          message: chunk,
+          timestamp: Date.now(),
+        });
+      }
+
+      state.messages[roomId] = msgs;
     },
 
     clearMessages: (state, action: PayloadAction<string>) => {
@@ -87,23 +107,13 @@ const chatSlice = createSlice({
   },
 });
 
-export const { addChat, removeChat, addMessage, clearMessages, clearChats } =
-  chatSlice.actions;
+export const {
+  addChat,
+  removeChat,
+  addMessage,
+  appendToLastAssistantMessage,
+  clearMessages,
+  clearChats,
+} = chatSlice.actions;
 
 export default chatSlice.reducer;
-
-// Join a new chat
-// dispatch(addChat({ _id: "room1", user: authUser, title: "Room 1" }));
-
-// Add messages
-// dispatch(addMessage({ roomId: "room1", role: "user", message: "Hello Room 1" }));
-// dispatch(addMessage({ roomId: "room1", role: "bot", message: "Hi there!" }));
-
-// Remove a chat
-// dispatch(removeChat("room1"));
-
-// Clear only messages of a chat
-// dispatch(clearMessages("room1"));
-
-// Clear everything
-// dispatch(clearChats());

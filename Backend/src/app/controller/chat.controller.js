@@ -26,7 +26,7 @@ const getChat = async (req, res) => {
   try {
     const chats = await chatModel.find({
       user: req.user._id
-    }).sort({ createdAt: -1 })
+    }).sort({ createdAt: 1 })
 
     res.status(201).json({
       message: "read chats successfully!",

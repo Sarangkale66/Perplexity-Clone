@@ -11,7 +11,7 @@
   position: sticky;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1rem;
   top: 0;
   background-color: #1e1f22;
@@ -161,6 +161,77 @@
   font-size: 11px;
   color: gray;
 }
+
+.chatgpt-bubble table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+}
+
+.chatgpt-bubble th,
+.chatgpt-bubble td {
+  border: 1px solid #bebebe;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.chatgpt-bubble th {
+  background-color: #1e1e1e;
+  font-weight: 600;
+}
+
+/* Headings */
+.chatgpt-bubble h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+  color: #fff;
+}
+
+.chatgpt-bubble h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0.9rem 0 0.4rem;
+  color: #e5e5e5;
+}
+
+.chatgpt-bubble h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0.8rem 0 0.3rem;
+  color: #d4d4d4;
+}
+
+/* Paragraphs */
+.chatgpt-bubble p {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* Inline code */
+.chatgpt-bubble code {
+  background-color: #252525;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #ffffff;
+  font-family: "Fira Code", monospace;
+}
+
+.chatgpt-bubble pre {
+  padding: 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.8rem 0;
+}
+
+.chatgpt-bubble strong {
+  font-weight: 700;
+  color: #ffcc66;
+  font-size: 1.1rem;
+}
+
 
 @media (min-width:660px) {
   .chat-container {

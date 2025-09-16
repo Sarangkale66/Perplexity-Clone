@@ -1,4 +1,4 @@
-import type { LoginPayload, RegisterPayload } from "../feature/reducer/AuthSlice";
+import type { LoginPayload, RegisterPayload } from "../feature/authReducer/AuthSlice";
 import api from "."
 
 export const RegisterUser = async (obj: RegisterPayload) => {

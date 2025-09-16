@@ -10,23 +10,21 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import authReducer, { type AuthState } from "../feature/reducer/AuthSlice";
-import chatReducer, { type ChatState } from "../feature/reducer/ChatSlice";
 
-export interface RootState {
-  auth: AuthState;
-  chat: ChatState[];
-}
+import authReducer from "../feature/authReducer/AuthSlice";
+import socketReducer from "../feature/socketReducer/SocketSlice"
+import chatReducer from "../feature/chatReducer/ChatSlice";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth"],
+  whitelist: ["auth", "chat"],
 };
 
 const rootReducer = combineReducers({
   auth: authReducer,
   chat: chatReducer,
+  socket: socketReducer
 });
 
 const persistedReducer = persistReducer<ReturnType<typeof rootReducer>>(
@@ -48,4 +46,4 @@ export const persistor = persistStore(store);
 
 export type AppDispatch = typeof store.dispatch;
 export type AppStore = typeof store;
-export type AppRootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof store.getState>;

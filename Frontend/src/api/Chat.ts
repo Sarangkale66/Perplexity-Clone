@@ -1,4 +1,4 @@
-import type { ChatState } from "../feature/reducer/ChatSlice"
+import type { ChatState } from "../feature/chatReducer/ChatSlice"
 import api from ".";
 
 export const createChat = async (obj: Pick<ChatState, "title">) => {
@@ -8,7 +8,5 @@ export const createChat = async (obj: Pick<ChatState, "title">) => {
 
 export const getChats = async () => {
   const res = await api.get("/chat");
-  console.log(res.data);
-
   return res.data;
 }

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoginSignup.css";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/store";
-import { updateField, register, login } from "../feature/reducer/AuthSlice";
+import { updateField, register, login } from "../feature/authReducer/AuthSlice";
 import { useAuthMutation } from "../tanstack/mutation/auth";
 
 export const LoginSignup = ({ type }: { type: "signup" | "signin" }) => {

@@ -3,17 +3,14 @@ import "./Home.css"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom";
 import { useChatMutation } from "../../tanstack/mutation/chat"
-import { useChatsQuery } from "../../tanstack/query/chat";
-import queryClient from "../../tanstack/QueryClient";
 import { useDispatch } from "react-redux";
+import { addChat } from "../../feature/chatReducer/ChatSlice";
 
 const Home = () => {
   const dispatch = useDispatch();
   const textRef = useRef(null);
   const navigate = useNavigate();
   const [createChatMutation] = useChatMutation();
-  const { refetch } = useChatsQuery();
-
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -29,11 +26,13 @@ const Home = () => {
     if (message) {
       createChatMutation.mutate({ title: message }, {
         onSuccess: (data) => {
-          dispatch()
-          // queryClient.invalidateQueries({ queryKey: ["chats"] });
-          // refetch();
+          dispatch(addChat({
+            _id: data.chat._id,
+            title: data.chat.title,
+          }))
+
           navigate(`/${data.chat._id}`, {
-            state: { message },
+            state: { message, fromHome: true },
           })
         },
         onError: (error: any) => {
