@@ -1,0 +1,30 @@
+{
+  "name": "Perplexity Clone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx nodemon ./src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "@google/genai": "^1.19.0",
+    "@langchain/core": "^0.3.76",
+    "@langchain/google-genai": "^0.2.18",
+    "bcryptjs": "^3.0.2",
+    "cookie": "^1.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "ioredis": "^5.7.0",
+    "jsonwebtoken": "^9.0.2",
+    "langchain": "^0.3.34",
+    "mongoose": "^8.18.0",
+    "socket.io": "^4.8.1"
+  }
+}

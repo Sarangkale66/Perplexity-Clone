@@ -1,0 +1,211 @@
+.sidebar {
+  width: 13rem;
+  height: 100vh;
+  background: #1e1f22;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0px;
+  box-sizing: border-box;
+  border-right: 0.01em solid gray;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translateX(0);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+/* ===== Header ===== */
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-header button {
+  background: #4d4e5200;
+  color: white;
+  border: none;
+  padding: 7px;
+  margin-left: 0.5em;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 12px;
+  min-width: 8em;
+}
+
+.sidebar-header button:hover {
+  background: #2a2b2f;
+}
+
+.sidebar-header input {
+  background: transparent;
+  padding: 8px;
+  margin: 0em 0.5em;
+  border-radius: 6px;
+  border: none;
+  font-size: 12px;
+  outline: none;
+  color: white;
+  border: 0.1em solid white;
+}
+
+/* ===== Chat List ===== */
+.chat-list {
+  margin-top: 15px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-item {
+  display: flex;
+  margin: 0.13em 0.5em;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+  padding: 0.4em;
+  border-radius: 6px;
+  cursor: default;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: #ddd;
+}
+
+.chat-item:hover {
+  background: #2a2b2f;
+}
+
+.chat-item .ellipsis {
+  opacity: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s ease;
+}
+
+.chat-item:hover .ellipsis {
+  opacity: 1;
+}
+
+.ellipsis:hover {
+  transform: scale(1.2);
+}
+
+.chat-item.active {
+  background: #3a3b3f;
+  color: #fff;
+}
+
+.title {
+  display: inline-block;
+  max-width: 10em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ===== User Profile Section ===== */
+.user-profile {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  border-top: 0.05em solid gray;
+  width: 100%;
+  height: 7%;
+}
+
+.img-container {
+  height: 25px;
+  width: 30px;
+  margin-left: 0.5em;
+  background-color: red;
+  border-radius: 10rem;
+  overflow: hidden;
+}
+
+.img-container img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.section {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn {
+  font-size: 10px;
+  font-weight: 600;
+  margin-right: 1em;
+  padding: 0.5em 0.9em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  background-color: #3f3f3f;
+  border: 1px solid transparent;
+}
+
+/* ===== Close / Toggle Buttons ===== */
+.close-btn {
+  background: #2a2b2f;
+  color: white;
+  border: none;
+  padding: 5px 8px;
+  margin-right: 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.close-btn:hover {
+  background: #3a3b3f;
+}
+
+.toggle-btn {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 110;
+  display: flex;
+  background: none;
+  align-items: center;
+}
+
+.toggle-btn:hover {
+  background: #7c7c7c;
+}
+
+/* ----- Desktop / Laptop: Push Layout (override mobile overlay) ----- */
+@media screen and (min-width: 1025px) {
+  .sidebar {
+    position: relative;
+    transform: none !important;
+  }
+
+  .toggle-btn {
+    position: static;
+    margin: 8px;
+  }
+}

@@ -1,0 +1,77 @@
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.sidebar {
+  width: 260px;
+  background: var(--color-bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-header button {
+  background: var(--color-bg-active);
+  color: var(--color-text);
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1px;
+  transition: background 0.2s ease;
+}
+
+.sidebar-header button:hover {
+  background: var(--color-bg-hover);
+}
+
+.sidebar-header input {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.chat-list {
+  margin-top: 15px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-item {
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  transition: background 0.2s ease;
+}
+
+.chat-item:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.chat-item.active {
+  background: var(--color-bg-active);
+  color: var(--color-text);
+}
+
+.main-content {
+  flex: 1;
+  background: var(--color-bg);
+  padding: 20px;
+  overflow-y: auto;
+}
