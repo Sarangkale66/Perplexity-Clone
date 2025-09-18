@@ -130,7 +130,6 @@
   height: 25px;
   width: 30px;
   margin-left: 0.5em;
-  background-color: red;
   border-radius: 10rem;
   overflow: hidden;
 }
@@ -160,7 +159,6 @@
   border: 1px solid transparent;
 }
 
-/* ===== Close / Toggle Buttons ===== */
 .close-btn {
   background: #2a2b2f;
   color: white;
@@ -185,16 +183,15 @@
   left: 8px;
   border: none;
   padding: 6px 10px;
-  border-radius: 6px;
+  background-color: #1e1f22;
   cursor: pointer;
   z-index: 110;
   display: flex;
-  background: none;
   align-items: center;
 }
 
 .toggle-btn:hover {
-  background: #7c7c7c;
+  background: #212121;
 }
 
 /* ----- Desktop / Laptop: Push Layout (override mobile overlay) ----- */
@@ -206,6 +203,6 @@
 
   .toggle-btn {
     position: static;
-    margin: 8px;
+    margin: 0px;
   }
 }

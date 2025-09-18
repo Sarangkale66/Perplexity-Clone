@@ -50,11 +50,14 @@ export const connectSocket = (url: string) => (dispatch: AppDispatch) => {
     });
 
     socket.on("connect", () => {
+      console.log("connected");
+
       dispatch(setConnected(true));
       dispatch(setError(null));
     });
 
     socket.on("disconnect", () => {
+      console.log("disconnected");
       dispatch(setConnected(false));
       dispatch(setCurrentRoom(null));
     });
@@ -79,7 +82,6 @@ export const disconnectSocket = () => (dispatch: AppDispatch) => {
 export const joinRoom = (roomId: string) => (dispatch: AppDispatch, getState: () => { socket: SocketState }) => {
   const state = getState().socket;
   if (socket && state.connected) {
-    socket.emit("joinRoom", roomId);
     dispatch(setCurrentRoom(roomId));
   }
 };
@@ -87,7 +89,6 @@ export const joinRoom = (roomId: string) => (dispatch: AppDispatch, getState: ()
 export const leaveRoom = () => (dispatch: AppDispatch, getState: () => { socket: SocketState }) => {
   const state = getState().socket;
   if (socket && state.currentRoom) {
-    socket.emit("leaveRoom", state.currentRoom);
     dispatch(setCurrentRoom(null));
   }
 };

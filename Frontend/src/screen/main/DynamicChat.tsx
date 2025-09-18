@@ -1,6 +1,6 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { Mic, Send, Clipboard } from "lucide-react";
+import { Mic, Send, Clipboard, BrainCircuit } from "lucide-react";
 import "./DynamicChat.css";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
@@ -8,8 +8,15 @@ import { getSocketInstance } from "../../feature/socketReducer/SocketSlice";
 import {
   addMessage,
   appendToLastAssistantMessage,
+  clearMessages,
   type Message,
 } from "../../feature/chatReducer/ChatSlice";
+
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  fetchMessages,
+  type FetchMessagesResponse,
+} from "../../api/Message";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -19,13 +26,12 @@ import "highlight.js/styles/github-dark.css";
 const EMPTY_MESSAGES: Message[] = [];
 
 const DynamicChat = () => {
+  const { id } = useParams(); // ✅ always available even after reload
   const dispatch = useDispatch<AppDispatch>();
   const { currentRoom } = useSelector((state: RootState) => state.socket);
 
-  const messages = useSelector((state: RootState) =>
-    currentRoom && state.chat.messages[currentRoom]
-      ? state.chat.messages[currentRoom]
-      : EMPTY_MESSAGES
+  const reduxMessages = useSelector((state: RootState) =>
+    id && state.chat.messages[id] ? state.chat.messages[id] : EMPTY_MESSAGES
   );
 
   const socket = getSocketInstance();
@@ -33,23 +39,90 @@ const DynamicChat = () => {
   const { message, fromHome } = location.state || {};
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
+  const textRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const [isAtBottom, setIsAtBottom] = useState(true);
+
+  // ✅ Use id instead of currentRoom for fetching
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<FetchMessagesResponse>({
+    queryKey: ["messages", { chatId: id }], //@ts-ignore
+    queryFn: fetchMessages,
+    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
+    enabled: !!id,
+  });
+
+  // Track whether user is at bottom
   useEffect(() => {
-    if (fromHome && message) {
-      dispatch(addMessage({ roomId: currentRoom!, role: "user", message }));
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const threshold = 50; // px from bottom
+      const atBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight <
+        threshold;
+
+      setIsAtBottom(atBottom);
+
+      if (container.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // ✅ Scroll to bottom only if user is already near bottom
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !isAtBottom) return;
+    container.scrollTop = container.scrollHeight;
+  }, [reduxMessages, isAtBottom]);
+
+  // ✅ Populate Redux when data arrives
+  useEffect(() => {
+    if (!data || !id) return;
+
+    const allMessages = data.pages.flatMap((p: any) => p.messages);
+
+    allMessages.forEach((msg) => {
+      dispatch(
+        addMessage({
+          roomId: id,
+          role: msg.role,
+          message: msg.text,
+        })
+      );
+    });
+
+    return () => {
+      dispatch(clearMessages(id));
+    };
+  }, [id, data, dispatch]);
+
+  useEffect(() => {
+    if (fromHome && message && id) {
+      dispatch(addMessage({ roomId: id, role: "user", message }));
 
       socket?.emit("ai-message", {
-        chatId: currentRoom,
+        chatId: id,
         message,
       });
     }
 
     socket?.on("ai-response", (chunk: string) => {
-      if (!chunk) return;
-
+      const { txt, chatId } = JSON.parse(chunk);
       dispatch(
         appendToLastAssistantMessage({
-          roomId: currentRoom!,
-          chunk,
+          roomId: chatId || id,
+          chunk: txt,
         })
       );
     });
@@ -57,10 +130,9 @@ const DynamicChat = () => {
     return () => {
       socket?.off("ai-response");
     };
-  }, [message, fromHome, currentRoom, dispatch, socket]);
+  }, [message, fromHome, id, dispatch, socket]);
 
-  const textRef = useRef<HTMLTextAreaElement>(null);
-
+  // Send message on Enter
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -70,14 +142,14 @@ const DynamicChat = () => {
 
   const handleSubmit = () => {
     const elem = textRef.current;
-    if (!elem || !elem.value.trim()) return;
+    if (!elem || !elem.value.trim() || !id) return;
 
     const newMessage = elem.value.trim();
 
-    dispatch(addMessage({ roomId: currentRoom!, role: "user", message: newMessage }));
+    dispatch(addMessage({ roomId: id, role: "user", message: newMessage }));
 
     socket?.emit("ai-message", {
-      chatId: currentRoom,
+      chatId: id,
       message: newMessage,
     });
 
@@ -95,20 +167,24 @@ const DynamicChat = () => {
   };
 
   const title =
-    message && message.length <= 20 ? message : message?.slice(0, 20) + "...";
+    message && message.length <= 20
+      ? message
+      : message?.slice(0, 20) + "...";
 
   return (
-    <div className="chatgpt-page">
+    <div ref={containerRef} className="chatgpt-page">
       <nav className="nav-bar">
+        <BrainCircuit />
         <span className="chat-title">{title}</span>
       </nav>
 
       <div className="chat-container">
         <div className="chatgpt-messages">
-          {messages.map((msg, idx) => (
+          {reduxMessages.map((msg, idx) => (
             <div
               key={idx}
-              className={`chatgpt-message ${msg.role === "user" ? "user" : "assistant"}`}
+              className={`chatgpt-message ${msg.role === "user" ? "user" : "assistant"
+                }`}
             >
               <div className="chatgpt-bubble">
                 <ReactMarkdown
@@ -119,7 +195,7 @@ const DynamicChat = () => {
                 </ReactMarkdown>
               </div>
 
-              {msg.role === "assistant" && (
+              {msg.role === "model" && (
                 <div className="copy-btn-container">
                   <button
                     className="copy-btn"
@@ -134,6 +210,10 @@ const DynamicChat = () => {
               )}
             </div>
           ))}
+
+          {isFetchingNextPage && (
+            <div className="loading">Loading more...</div>
+          )}
         </div>
       </div>
 

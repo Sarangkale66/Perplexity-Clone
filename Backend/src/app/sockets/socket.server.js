@@ -33,36 +33,16 @@ function initSocket(httpServer) {
   io.on("connection", (socket) => {
     console.log("A user connected");
 
-    socket.on("joinRoom", (room) => {
-      if (socket.currentRoom) {
-        socket.leave(socket.currentRoom);
-      }
-      socket.join(room);
-      socket.currentRoom = room;
-      console.log(`User ${socket.user.id} joined room ${room}`);
-    })
-
-    socket.on("leaveRoom", (room) => {
-      const targetRoom = room || socket.currentRoom;
-      if (targetRoom) {
-        socket.leave(targetRoom);
-        console.log(`User ${socket.user.id} left room ${targetRoom}`);
-        if (socket.currentRoom === targetRoom) {
-          socket.currentRoom = null;
-        }
-      }
-    })
-
     socket.on("ai-message", async (data) => {
       await messageModel.create({
-        chat: data.chatId || socket.currentRoom,
+        chat: data.chatId,
         user: socket.user.id,
         role: "user",
         text: data.message
       })
 
       const history = (await messageModel.find({
-        chat: data.chatId || socket.currentRoom,
+        chat: data.chatId,
         user: socket.user.id
       })).map(message => {
         return {
@@ -76,9 +56,10 @@ function initSocket(httpServer) {
       })
 
       const responseTxt = await aiService.generateContentStream(history, (chunk) => {
-        if (socket.currentRoom) {
-          io.to(socket.currentRoom).emit("ai-response", chunk);
-        }
+        socket.emit("ai-response", JSON.stringify({
+          chatId: data.chatId || socket.currentRoom,
+          txt: chunk
+        }));
       });
 
       await messageModel.create({

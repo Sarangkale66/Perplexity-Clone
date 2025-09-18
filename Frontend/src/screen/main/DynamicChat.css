@@ -11,8 +11,8 @@
   position: sticky;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
+  justify-content: center;
+  gap: 0.5rem;
   top: 0;
   background-color: #1e1f22;
   z-index: 20;
@@ -57,22 +57,28 @@
 }
 
 .chatgpt-bubble {
-  max-width: 80%;
-  padding: 0.9rem 1rem;
+  max-width: 100%;
   border-radius: 0.75rem;
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 2;
   white-space: pre-wrap;
 }
 
 .chatgpt-message.assistant .chatgpt-bubble {
+  padding: 0.5rem 0.3rem;
   background: transparent;
   color: var(--color-text);
+  max-width: 100%;
+  align-self: flex-start;
 }
 
 .chatgpt-message.user .chatgpt-bubble {
   background: #1e1f22;
   color: #fff;
+  max-width: 80%;
+  padding: 0.5rem 1rem;
+  align-self: flex-end;
+  margin-right: 0.5rem;
 }
 
 .input-container {
@@ -132,7 +138,7 @@
 }
 
 .copy-btn-container {
-  margin-left: 1em;
+  margin-left: 0.3em;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -162,74 +168,158 @@
   color: gray;
 }
 
-.chatgpt-bubble table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 12px 0;
-}
-
-.chatgpt-bubble th,
-.chatgpt-bubble td {
-  border: 1px solid #bebebe;
-  padding: 6px 10px;
-  text-align: left;
-}
-
-.chatgpt-bubble th {
-  background-color: #1e1e1e;
-  font-weight: 600;
+/* ===== Markdown inside assistant bubble ===== */
+.chatgpt-bubble {
+  line-height: 1.6;
+  font-size: 0.95rem;
+  color: #e4e4e7;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 /* Headings */
 .chatgpt-bubble h1 {
   font-size: 1.6rem;
   font-weight: 700;
-  margin: 1rem 0 0.5rem;
-  color: #fff;
+  margin: 1rem 0 0.6rem;
+  color: #ffffff;
 }
 
 .chatgpt-bubble h2 {
   font-size: 1.4rem;
   font-weight: 600;
-  margin: 0.9rem 0 0.4rem;
+  margin: 0.9rem 0 0.5rem;
   color: #e5e5e5;
 }
 
 .chatgpt-bubble h3 {
   font-size: 1.2rem;
   font-weight: 600;
-  margin: 0.8rem 0 0.3rem;
+  margin: 0.7rem 0 0.4rem;
   color: #d4d4d4;
 }
 
 /* Paragraphs */
 .chatgpt-bubble p {
   margin: 0.5rem 0;
-  line-height: 1.6;
   color: #ddd;
 }
 
 /* Inline code */
 .chatgpt-bubble code {
-  background-color: #252525;
-  padding: 2px 5px;
+  background-color: #2a2a2a;
+  padding: 2px 6px;
   border-radius: 4px;
-  font-size: 0.95rem;
-  color: #ffffff;
+  font-size: 0.9rem;
+  color: aliceblue;
+  ;
   font-family: "Fira Code", monospace;
 }
 
+/* Code blocks */
 .chatgpt-bubble pre {
+  max-width: 100%;
+  /* don’t exceed bubble */
+  white-space: pre-wrap;
+  /* wrap long lines */
+  word-wrap: break-word;
+  /* break words if needed */
+  overflow-x: auto;
+  /* allow horizontal scroll only if really needed */
+  background-color: #1a1a1a;
   padding: 10px;
   border-radius: 6px;
-  overflow-x: auto;
   margin: 0.8rem 0;
 }
 
+.chatgpt-bubble pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85rem;
+  /* bumped up from 0.6rem for readability */
+  color: #e5e5e5;
+  font-family: "Fira Code", monospace;
+  display: block;
+  /* ensures wrapping applies correctly */
+  white-space: pre;
+  word-break: break-word;
+}
+
+/* Tables */
+.chatgpt-bubble table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.chatgpt-bubble th,
+.chatgpt-bubble td {
+  border: 1px solid #3a3a3a;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.chatgpt-bubble th {
+  background-color: #252525;
+  font-weight: 600;
+  color: #f5f5f5;
+}
+
+/* Lists */
+.chatgpt-bubble ul,
+.chatgpt-bubble ol {
+  margin: 0.5rem 0rem;
+  padding-left: 1.2rem;
+}
+
+.chatgpt-bubble li {
+  margin: 0.3rem 0;
+}
+
+/* Links */
+.chatgpt-bubble a {
+  color: #4ea1f3;
+  text-decoration: none;
+}
+
+.chatgpt-bubble a:hover {
+  text-decoration: underline;
+}
+
+/* Blockquotes */
+.chatgpt-bubble blockquote {
+  border-left: 3px solid #4ea1f3;
+  padding-left: 10px;
+  margin: 0.7rem 0;
+  color: #c9c9c9;
+  font-style: italic;
+}
+
+/* Strong */
 .chatgpt-bubble strong {
   font-weight: 700;
-  color: #ffcc66;
   font-size: 1.1rem;
+  color: #c1c4c1;
+}
+
+.chatgpt-bubble ul {
+  list-style-type: disc;
+  margin: 0.6rem 0 0.6rem 1.5rem;
+  padding-left: 0rem;
+  color: #ddd;
+}
+
+.chatgpt-bubble ol {
+  list-style-type: decimal;
+  margin: 0.6rem 0 0.6rem 1.5rem;
+  padding-left: 1rem;
+  color: #ddd;
+}
+
+.chatgpt-bubble li {
+  margin: 0.3rem 0;
+  line-height: 1.7;
 }
 
 
@@ -246,5 +336,17 @@
   .chatgpt-input {
     max-width: 75%;
     width: 60%;
+  }
+
+  .nav-bar {
+    justify-content: flex-start;
+  }
+
+  .chatgpt-bubble {
+    max-width: 90%;
+  }
+
+  .chatgpt-bubble pre code {
+    white-space: pre-wrap;
   }
 }

@@ -3,16 +3,20 @@ import Sidebar from '../component/Sidebar'
 import "./MainLayout.css"
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { connectSocket, disconnectSocket } from '../feature/socketReducer/SocketSlice'
+import { connectSocket, disconnectSocket, getSocketInstance } from '../feature/socketReducer/SocketSlice'
+import type { AppDispatch } from '../store/store'
 
 const MainLayout = () => {
-  const dispatch = useDispatch();
+  const socket = getSocketInstance();
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     dispatch(connectSocket("http://localhost:3000"));
+
     return () => {
+      socket?.off("ai-response")
       dispatch(disconnectSocket());
     }
-  }, [dispatch])
+  }, [dispatch, socket]);
   return (
     <div className='main'>
       <Sidebar />

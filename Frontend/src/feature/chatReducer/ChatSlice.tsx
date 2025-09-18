@@ -82,11 +82,11 @@ const chatSlice = createSlice({
       const { roomId, chunk } = action.payload;
       const msgs = state.messages[roomId] || [];
 
-      if (msgs.length > 0 && msgs[msgs.length - 1].role === "assistant") {
+      if (msgs.length > 0 && msgs[msgs.length - 1].role === "model") {
         msgs[msgs.length - 1].message += chunk;
       } else {
         msgs.push({
-          role: "assistant",
+          role: "model",
           message: chunk,
           timestamp: Date.now(),
         });
