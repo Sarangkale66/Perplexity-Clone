@@ -3,11 +3,8 @@ import "./Home.css"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom";
 import { useChatMutation } from "../../tanstack/mutation/chat"
-import { useDispatch } from "react-redux";
-import { addChat } from "../../feature/chatReducer/ChatSlice";
 
 const Home = () => {
-  const dispatch = useDispatch();
   const textRef = useRef(null);
   const navigate = useNavigate();
   const [createChatMutation] = useChatMutation();
@@ -26,11 +23,6 @@ const Home = () => {
     if (message) {
       createChatMutation.mutate({ title: message }, {
         onSuccess: (data) => {
-          dispatch(addChat({
-            _id: data.chat._id,
-            title: data.chat.title,
-          }))
-
           navigate(`/${data.chat._id}`, {
             state: { message, fromHome: true },
           })

@@ -8,6 +8,7 @@ import { getSocketInstance } from "../../feature/socketReducer/SocketSlice";
 import {
   addMessage,
   appendToLastAssistantMessage,
+  prependMessage,
   clearMessages,
   type Message,
 } from "../../feature/chatReducer/ChatSlice";
@@ -26,9 +27,8 @@ import "highlight.js/styles/github-dark.css";
 const EMPTY_MESSAGES: Message[] = [];
 
 const DynamicChat = () => {
-  const { id } = useParams(); // ✅ always available even after reload
+  const { id } = useParams();
   const dispatch = useDispatch<AppDispatch>();
-  const { currentRoom } = useSelector((state: RootState) => state.socket);
 
   const reduxMessages = useSelector((state: RootState) =>
     id && state.chat.messages[id] ? state.chat.messages[id] : EMPTY_MESSAGES
@@ -40,11 +40,11 @@ const DynamicChat = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const textRef = useRef<HTMLTextAreaElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [isAtBottom, setIsAtBottom] = useState(true);
 
-  // ✅ Use id instead of currentRoom for fetching
   const {
     data,
     fetchNextPage,
@@ -57,36 +57,40 @@ const DynamicChat = () => {
     enabled: !!id,
   });
 
-  // Track whether user is at bottom
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleScroll = () => {
-      const threshold = 50; // px from bottom
+    const handleScroll = async () => {
+      const scrolledRatio =
+        container.scrollTop / (container.scrollHeight - container.clientHeight);
+
+      if (scrolledRatio <= 0.3 && hasNextPage && !isFetchingNextPage) {
+        await fetchNextPage();
+      }
+
+      const threshold = 50;
       const atBottom =
         container.scrollHeight - container.scrollTop - container.clientHeight <
         threshold;
-
       setIsAtBottom(atBottom);
-
-      if (container.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
     };
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // ✅ Scroll to bottom only if user is already near bottom
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !isAtBottom) return;
-    container.scrollTop = container.scrollHeight;
-  }, [reduxMessages, isAtBottom]);
+    if (!isAtBottom) return;
 
-  // ✅ Populate Redux when data arrives
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+
+    const container = containerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [reduxMessages.length, isAtBottom]);
+
   useEffect(() => {
     if (!data || !id) return;
 
@@ -103,14 +107,16 @@ const DynamicChat = () => {
     });
 
     return () => {
-      dispatch(clearMessages(id));
+      if (id) {
+        dispatch(clearMessages(id));
+      }
     };
+
   }, [id, data, dispatch]);
+
 
   useEffect(() => {
     if (fromHome && message && id) {
-      dispatch(addMessage({ roomId: id, role: "user", message }));
-
       socket?.emit("ai-message", {
         chatId: id,
         message,
@@ -132,7 +138,6 @@ const DynamicChat = () => {
     };
   }, [message, fromHome, id, dispatch, socket]);
 
-  // Send message on Enter
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -146,7 +151,7 @@ const DynamicChat = () => {
 
     const newMessage = elem.value.trim();
 
-    dispatch(addMessage({ roomId: id, role: "user", message: newMessage }));
+    dispatch(prependMessage({ roomId: id, role: "user", message: newMessage }));
 
     socket?.emit("ai-message", {
       chatId: id,
@@ -180,6 +185,7 @@ const DynamicChat = () => {
 
       <div className="chat-container">
         <div className="chatgpt-messages">
+          <div ref={bottomRef} />
           {reduxMessages.map((msg, idx) => (
             <div
               key={idx}

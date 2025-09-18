@@ -13,8 +13,11 @@ export const fetchMessages = async (
   const [_key, { chatId }] = queryKey;
 
   const { data } = await api.get("/messages", {
-    params: { chatId, page: pageParam, limit: 20 },
+    params: { chatId, page: pageParam, limit: 30 },
   });
+
+  console.log(data);
+
 
   return {
     messages: data.messages,

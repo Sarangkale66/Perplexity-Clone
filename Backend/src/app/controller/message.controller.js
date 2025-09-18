@@ -21,7 +21,7 @@ const getMessages = async (req, res) => {
     const total = await messageModel.countDocuments({ chat: chatId });
 
     res.json({
-      messages: messages.reverse(),
+      messages: messages,
       hasMore: page * limit < total,
     });
   } catch (err) {

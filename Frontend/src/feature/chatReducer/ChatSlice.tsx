@@ -75,6 +75,21 @@ const chatSlice = createSlice({
       });
     },
 
+    prependMessage: (
+      state,
+      action: PayloadAction<{ roomId: string; role: string; message: string }>
+    ) => {
+      const { roomId, role, message } = action.payload;
+      if (!state.messages[roomId]) {
+        state.messages[roomId] = [];
+      }
+      state.messages[roomId].unshift({
+        role,
+        message,
+        timestamp: Date.now(),
+      });
+    },
+
     appendToLastAssistantMessage: (
       state,
       action: PayloadAction<{ roomId: string; chunk: string }>
@@ -82,10 +97,10 @@ const chatSlice = createSlice({
       const { roomId, chunk } = action.payload;
       const msgs = state.messages[roomId] || [];
 
-      if (msgs.length > 0 && msgs[msgs.length - 1].role === "model") {
-        msgs[msgs.length - 1].message += chunk;
+      if (msgs.length > 0 && msgs[0].role === "model") {
+        msgs[0].message += chunk;
       } else {
-        msgs.push({
+        msgs.unshift({
           role: "model",
           message: chunk,
           timestamp: Date.now(),
@@ -111,6 +126,7 @@ export const {
   addChat,
   removeChat,
   addMessage,
+  prependMessage,
   appendToLastAssistantMessage,
   clearMessages,
   clearChats,
