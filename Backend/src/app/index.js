@@ -37,7 +37,7 @@ app.get("/auth/google/callback",
     const token = jwt.sign({ id: req.user._id, email: req.user.email, username: req.user.username }, process.env.JWT_SECRET, { expiresIn: "24h" });
 
     res.cookie("token", token);
-    res.redirect("http://localhost:5173/");
+    res.redirect("/");
   }
 );
 
