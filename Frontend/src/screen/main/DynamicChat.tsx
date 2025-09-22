@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { Mic, Send, Clipboard, BrainCircuit } from "lucide-react";
+import { Send, Clipboard, BrainCircuit } from "lucide-react";
 import "./DynamicChat.css";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
@@ -23,6 +23,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
+import SpeechToTextButton from "../../component/SpeechToTextButton";
 
 const EMPTY_MESSAGES: Message[] = [];
 
@@ -42,6 +43,7 @@ const DynamicChat = () => {
   const textRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasSentInitial = useRef(false);
 
   const [isAtBottom, setIsAtBottom] = useState(true);
 
@@ -116,11 +118,12 @@ const DynamicChat = () => {
 
 
   useEffect(() => {
-    if (fromHome && message && id) {
+    if (!hasSentInitial.current && fromHome && message && id) {
       socket?.emit("ai-message", {
         chatId: id,
         message,
       });
+      hasSentInitial.current = true;
     }
 
     socket?.on("ai-response", (chunk: string) => {
@@ -136,7 +139,7 @@ const DynamicChat = () => {
     return () => {
       socket?.off("ai-response");
     };
-  }, [message, fromHome, id, dispatch, socket]);
+  }, [message, fromHome, id, socket]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -232,9 +235,7 @@ const DynamicChat = () => {
             onKeyDown={handleKeyDown}
           />
           <div className="actions">
-            <div className="enter">
-              <Mic size={18} />
-            </div>
+            <SpeechToTextButton textRef={textRef} />
             <div className="enter" onClick={handleSubmit}>
               <Send size={18} />
             </div>

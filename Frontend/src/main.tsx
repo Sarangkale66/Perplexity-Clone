@@ -6,12 +6,14 @@ import AppRouter from './router/AppRouter.tsx'
 import { QueryClientProvider } from '@tanstack/react-query'
 import queryClient from "./tanstack/QueryClient.tsx"
 import { PersistGate } from 'redux-persist/integration/react'
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 
 createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <QueryClientProvider client={queryClient}>
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
         <AppRouter />
       </QueryClientProvider>
     </PersistGate>

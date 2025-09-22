@@ -1,0 +1,53 @@
+.enter {
+  height: 1.7em;
+  width: 1.7em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  background-color: transparent;
+  color: rgb(255, 255, 255);
+}
+
+.enter:hover {
+  background-color: black;
+  color: white;
+}
+
+/* Listening state for the button */
+.enter.listening {
+  background-color: rgb(255, 255, 255);
+  color: rgb(255, 0, 0);
+  border-color: red;
+}
+
+/* Transcript container */
+.transcript {
+  margin-top: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 0.95rem;
+  color: #111827;
+  background-color: #f3f4f6;
+  padding: 8px 12px;
+  border-radius: 6px;
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+/* Reset transcript button */
+.reset-btn {
+  margin-top: 5px;
+  background-color: #e5e7eb;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: background 0.2s ease;
+}
+
+.reset-btn:hover {
+  background-color: #d1d5db;
+}

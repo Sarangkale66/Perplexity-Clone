@@ -16,9 +16,6 @@ export const fetchMessages = async (
     params: { chatId, page: pageParam, limit: 30 },
   });
 
-  console.log(data);
-
-
   return {
     messages: data.messages,
     nextPage: data.hasMore ? pageParam + 1 : undefined,

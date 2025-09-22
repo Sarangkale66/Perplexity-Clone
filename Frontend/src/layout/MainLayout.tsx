@@ -10,7 +10,7 @@ const MainLayout = () => {
   const socket = getSocketInstance();
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
-    dispatch(connectSocket("http://localhost:3000"));
+    dispatch(connectSocket(""));
 
     return () => {
       socket?.off("ai-response")

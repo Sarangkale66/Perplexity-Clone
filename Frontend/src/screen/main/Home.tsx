@@ -1,10 +1,14 @@
-import { Mic, Send, BrainCircuit } from "lucide-react"
+import { Send, BrainCircuit } from "lucide-react"
 import "./Home.css"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom";
 import { useChatMutation } from "../../tanstack/mutation/chat"
+import { addChat } from "../../feature/chatReducer/ChatSlice";
+import { useDispatch } from "react-redux";
+import SpeechToTextButton from "../../component/SpeechToTextButton";
 
 const Home = () => {
+  const dispatch = useDispatch();
   const textRef = useRef(null);
   const navigate = useNavigate();
   const [createChatMutation] = useChatMutation();
@@ -23,6 +27,10 @@ const Home = () => {
     if (message) {
       createChatMutation.mutate({ title: message }, {
         onSuccess: (data) => {
+          dispatch(addChat({
+            _id: data.chat._id,
+            title: message
+          }));
           navigate(`/${data.chat._id}`, {
             state: { message, fromHome: true },
           })
@@ -59,9 +67,7 @@ const Home = () => {
             onKeyDown={handleKeyDown}
           />
           <div className="actions">
-            <div className="enter">
-              <Mic size={18} />
-            </div>
+            <SpeechToTextButton textRef={textRef} />
             <div className="enter" onClick={handleSubmit}>
               <Send size={18} />
             </div>

@@ -168,7 +168,6 @@
   color: gray;
 }
 
-/* ===== Markdown inside assistant bubble ===== */
 .chatgpt-bubble {
   line-height: 1.6;
   font-size: 0.95rem;
@@ -250,7 +249,7 @@
   border-collapse: collapse;
   width: 100%;
   margin: 1rem 0;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
 }
 
 .chatgpt-bubble th,

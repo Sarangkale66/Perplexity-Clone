@@ -11,9 +11,10 @@
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
-    "@google/genai": "^1.19.0",
     "@langchain/core": "^0.3.76",
     "@langchain/google-genai": "^0.2.18",
+    "@langchain/groq": "^0.2.4",
+    "@langchain/mistralai": "^0.2.1",
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
@@ -25,6 +26,8 @@
     "jsonwebtoken": "^9.0.2",
     "langchain": "^0.3.34",
     "mongoose": "^8.18.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "socket.io": "^4.8.1"
   }
 }

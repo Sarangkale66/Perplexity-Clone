@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["user", "plus"],
     default: "user"
+  },
+  image: {
+    type: String,
+    default: ""
   }
 })
 

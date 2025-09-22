@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 import { updateField, register, login } from "../feature/authReducer/AuthSlice";
 import { useAuthMutation } from "../tanstack/mutation/auth";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const LoginSignup = ({ type }: { type: "signup" | "signin" }) => {
   const dispatch = useDispatch();
@@ -229,7 +230,7 @@ export const LoginSignup = ({ type }: { type: "signup" | "signin" }) => {
             />
             <GoogleSignInButton
               type={type === "signin" ? "Sign In" : "Sign Up"}
-              href="/auth/google"
+              href={`${BACKEND_URL}/auth/google`}
             />
           </div>
         </div>
